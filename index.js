@@ -39,7 +39,7 @@ exports.loadDir = (dir, ext) => {
   return readdir(dir)
     .filter(R.match(isSqlFile))
     .reduce((files, filePath) => {
-      const name = path.basename(filePath, ext);
+      const name = filePath.replace(dir + "/", "").replace(ext, "");
       return Object.assign(files, {
         [name]: fs.readFileSync(filePath, { encoding: "utf8" }),
       });
