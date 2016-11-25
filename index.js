@@ -5,7 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const readdir = require("recursive-readdir-sync");
 
-const dollarFollowedByLCAscii = /\$([a-zA-Z0-9_\.]+)/g;
+const dollarFollowedByAscii = /\$([a-zA-Z0-9_\.]+)/g;
 
 module.exports = exports = (queries, context, databaseUrl) => {
   const db = pg.Pool(databaseUrl);
@@ -16,7 +16,7 @@ module.exports = exports = (queries, context, databaseUrl) => {
 
   const queryWithObj = objQuery => (argsObj) => {
     const args = [];
-    const pgQuery = objQuery.replace(dollarFollowedByLCAscii, (_, name) => {
+    const pgQuery = objQuery.replace(dollarFollowedByAscii, (_, name) => {
       args.push(R.path(name.split("."), argsObj));
       return `$${args.length}`;
     });
