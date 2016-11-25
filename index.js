@@ -4,6 +4,11 @@ const mustache = require("mustache");
 const path = require("path");
 const fs = require("fs");
 const readdir = require("recursive-readdir-sync");
+const debug = require("debug");
+
+const info = debug("postache:info");
+const sensitive = debug("postache:sensitive");
+const error = debug("postache:error");
 
 const dollarFollowedByAscii = /\$([a-zA-Z0-9_\.]+)/g;
 
@@ -20,7 +25,13 @@ module.exports = exports = (queries, context, databaseUrl) => {
       args.push(R.path(name.split("."), argsObj));
       return `$${args.length}`;
     });
-    return db.query(pgQuery, args);
+    info("Running query: %s", pgQuery);
+    sensitive("Args: %j", args);
+    return db.query(pgQuery, args)
+    .catch((e) => {
+      error("Postache error: %j", e);
+      return Promise.reject(e);
+    });
   };
 
   return Object.assign(
