@@ -1,5 +1,5 @@
 const R = require("ramda");
-const pg = require("pg-then");
+const pg = require("pg");
 const mustache = require("mustache");
 const path = require("path");
 const fs = require("fs");
@@ -13,7 +13,11 @@ const error = debug("postache:error");
 const dollarFollowedByAscii = /\$([a-zA-Z0-9_\.]+)/g;
 
 module.exports = exports = (queries, context, databaseUrl) => {
-  const db = pg.Pool(databaseUrl);
+  const db = new pg.Pool(databaseUrl);
+
+  db.on("error", function (err, client) {
+    error("idle client error: %s %j", err.message, err.stack);
+  });
 
   const renderedQueries = R.mapObjIndexed((query) => {
     return mustache.render(query, context, queries);

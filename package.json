@@ -13,7 +13,6 @@
     "debug": "^2.3.3",
     "mustache": "^2.2.1",
     "pg": "^6.1.0",
-    "pg-then": "^1.2.1",
     "ramda": "^0.22.1",
     "recursive-readdir-sync": "^1.0.6"
   }
