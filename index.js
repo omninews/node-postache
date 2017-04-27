@@ -3,6 +3,7 @@ const pg = require("pg");
 const mustache = require("mustache");
 const path = require("path");
 const fs = require("fs");
+const url = require("url");
 const readdir = require("recursive-readdir-sync");
 const debug = require("debug");
 
@@ -12,8 +13,29 @@ const error = debug("postache:error");
 
 const dollarFollowedByAscii = /\$([a-zA-Z0-9_\.]+)/g;
 
+const urlToObj = (conStr) => {
+  if (typeof conStr !== "string") {
+    return conStr;
+  }
+
+  const conParams = url.parse(conStr, true);
+  const auth = conParams.auth.split(':');
+
+  return {
+    user: auth[0],
+    password: auth[1],
+    host: conParams.hostname,
+    port: conParams.port,
+    database: conParams.pathname.split('/')[1],
+    ssl: !!conParams.query.ssl,
+    min: conParams.query.min && +conParams.query.min,
+    max: conParams.query.max && +conParams.query.max,
+    idleTimeoutMillis: conParams.query.idleTimeoutMillis && +conParams.query.idleTimeoutMillis,
+  };
+};
+
 module.exports = exports = (queries, context, databaseUrl) => {
-  const db = new pg.Pool(databaseUrl);
+  const db = new pg.Pool(urlToObj(databaseUrl));
 
   db.on("error", function (err, client) {
     error("idle client error: %s %j", err.message, err.stack);
