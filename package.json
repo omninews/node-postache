@@ -4,7 +4,7 @@
   "description": "Mustache for queries; objects for query params",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/mocha tests"
   },
   "keywords": [],
   "author": "Andreas Hultgren (Omni)",
