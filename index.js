@@ -108,10 +108,10 @@ exports.loadDir = (dir, ext) => {
   if(ext[0] !== ".") {
     ext = `.${ext}`;
   }
-  const isSqlFile = new RegExp(`.*\\${ext}`);
+  const isSqlFile = new RegExp(`.*\\${ext}$`);
 
   return readdir(dir)
-    .filter(R.match(isSqlFile))
+    .filter((file) => ( file.match(isSqlFile)))
     .reduce((files, filePath) => {
       const name = filePath.replace(dir + "/", "").replace(ext, "");
       return Object.assign(files, {
