@@ -9,6 +9,7 @@
   "keywords": [],
   "author": "Andreas Hultgren (Omni)",
   "license": "ISC",
+  "engines" : { "node" : ">=6.0.0" },
   "dependencies": {
     "debug": "^2.3.3",
     "mustache": "^2.2.1",
