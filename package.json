@@ -15,5 +15,8 @@
     "pg": "^6.1.0",
     "ramda": "^0.22.1",
     "recursive-readdir-sync": "^1.0.6"
+  },
+  "devDependencies": {
+    "mocha": "^3.4.2"
   }
 }
