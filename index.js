@@ -1,7 +1,6 @@
 const R = require("ramda");
 const pg = require("pg");
 const mustache = require("mustache");
-const path = require("path");
 const fs = require("fs");
 const url = require("url");
 const readdir = require("recursive-readdir-sync");
@@ -11,7 +10,7 @@ const info = debug("postache:info");
 const sensitive = debug("postache:sensitive");
 const error = debug("postache:error");
 
-const dollarFollowedByAscii = /\$([a-zA-Z0-9_\.]+)/g;
+const dollarFollowedByAscii = /\$([a-zA-Z0-9_.]+)/g;
 
 /* Remove the password from a given url string
 */
@@ -29,24 +28,24 @@ const urlToObj = (conStr) => {
 
   const hasAuth = conParams.auth !== null;
 
-  let auth = { 
-    username: '',
-    password: ''
+  const auth = {
+    username: "",
+    password: ""
   };
 
-  if (hasAuth) {  
-    if (conParams.auth.indexOf(':') === -1){
+  if (hasAuth) {
+    if (conParams.auth.indexOf(":") === -1) {
       auth.username = conParams.auth;
-      info('No password supplied, using only username');
+      info("No password supplied, using only username");
     } else {
-      auth.username = conParams.auth.split(':')[0];
-      auth.password = conParams.auth.split(':')[1];
+      auth.username = conParams.auth.split(":")[0];
+      auth.password = conParams.auth.split(":")[1];
     }
   } else {
-    info('No username or password supplied, using blank name and password');
+    info("No username or password supplied, using blank name and password");
   }
 
-  if (conParams.pathname === null){
+  if (conParams.pathname === null) {
     error(`
 You must define a valid database url!
 A database URL looks like: 
@@ -63,7 +62,7 @@ But you gave me:
     password: auth[1],
     host: conParams.hostname,
     port: conParams.port,
-    database: conParams.pathname.split('/')[1],
+    database: conParams.pathname.split("/")[1],
     ssl: !!conParams.query.ssl,
     min: conParams.query.min && +conParams.query.min,
     max: conParams.query.max && +conParams.query.max,
@@ -71,16 +70,18 @@ But you gave me:
   };
 };
 
-module.exports = exports = (queries, context, databaseUrl) => {
+module.exports = (queries, context, databaseUrl) => {
   const db = new pg.Pool(urlToObj(databaseUrl));
 
-  db.on("error", function (err, client) {
+  db.on("error", (err) => {
     error("idle client error: %s %j", err.message, err.stack);
   });
 
-  const renderedQueries = R.mapObjIndexed((query) => {
-    return mustache.render(query, context, queries);
-  }, queries);
+  const renderedQueries = R
+    .mapObjIndexed(
+      query => mustache.render(query, context, queries),
+      queries
+    );
 
   const queryWithObj = objQuery => (argsObj) => {
     const args = [];
@@ -103,17 +104,17 @@ module.exports = exports = (queries, context, databaseUrl) => {
   );
 };
 
-exports.loadDir = (dir, ext) => {
-  ext = ext || ".sql";
-  if(ext[0] !== ".") {
+module.exports.loadDir = (dir, extOption) => {
+  let ext = extOption || ".sql";
+  if (ext[0] !== ".") {
     ext = `.${ext}`;
   }
   const isSqlFile = new RegExp(`.*\\${ext}$`);
 
   return readdir(dir)
-    .filter((file) => ( file.match(isSqlFile)))
+    .filter(file => (file.match(isSqlFile)))
     .reduce((files, filePath) => {
-      const name = filePath.replace(dir + "/", "").replace(ext, "");
+      const name = filePath.replace(`${dir}/`, "").replace(ext, "");
       return Object.assign(files, {
         [name]: fs.readFileSync(filePath, { encoding: "utf8" }),
       });
