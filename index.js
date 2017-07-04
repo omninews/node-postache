@@ -19,7 +19,7 @@ const obscurePassword = (conStr, password) => {
   return conStr.replace(password, "\x1B[31m{password omitted}\x1B[39m");
 };
 
-const urlToObj = (conStr) => {
+const urlToObj = conStr => {
   if (typeof conStr !== "string") {
     return conStr;
   }
@@ -46,16 +46,17 @@ const urlToObj = (conStr) => {
   }
 
   if (conParams.pathname === null) {
-    error(`
+    error(
+      `
 You must define a valid database url!
 A database URL looks like: 
   postgres://localhost/omni/
 But you gave me:
   ${obscurePassword(conStr, auth.password)}
-    `.trim());
+    `.trim()
+    );
     throw new Error("Invalid database URL!");
   }
-
 
   return {
     user: auth[0],
@@ -66,24 +67,24 @@ But you gave me:
     ssl: !!conParams.query.ssl,
     min: conParams.query.min && +conParams.query.min,
     max: conParams.query.max && +conParams.query.max,
-    idleTimeoutMillis: conParams.query.idleTimeoutMillis && +conParams.query.idleTimeoutMillis,
+    idleTimeoutMillis:
+      conParams.query.idleTimeoutMillis && +conParams.query.idleTimeoutMillis
   };
 };
 
 module.exports = (queries, context, databaseUrl) => {
   const db = new pg.Pool(urlToObj(databaseUrl));
 
-  db.on("error", (err) => {
+  db.on("error", err => {
     error("idle client error: %s %j", err.message, err.stack);
   });
 
-  const renderedQueries = R
-    .mapObjIndexed(
-      query => mustache.render(query, context, queries),
-      queries
-    );
+  const renderedQueries = R.mapObjIndexed(
+    query => mustache.render(query, context, queries),
+    queries
+  );
 
-  const queryWithObj = objQuery => (argsObj) => {
+  const queryWithObj = objQuery => argsObj => {
     const args = [];
     const pgQuery = objQuery.replace(dollarFollowedByAscii, (_, name) => {
       args.push(R.path(name.split("."), argsObj));
@@ -91,8 +92,7 @@ module.exports = (queries, context, databaseUrl) => {
     });
     info("Running query: %s", pgQuery);
     sensitive("Args: %j", args);
-    return db.query(pgQuery, args)
-    .catch((e) => {
+    return db.query(pgQuery, args).catch(e => {
       error("Postache error: %j", e);
       return Promise.reject(e);
     });
@@ -112,11 +112,11 @@ module.exports.loadDir = (dir, extOption) => {
   const isSqlFile = new RegExp(`.*\\${ext}$`);
 
   return readdir(dir)
-    .filter(file => (file.match(isSqlFile)))
+    .filter(file => file.match(isSqlFile))
     .reduce((files, filePath) => {
       const name = filePath.replace(`${dir}/`, "").replace(ext, "");
       return Object.assign(files, {
-        [name]: fs.readFileSync(filePath, { encoding: "utf8" }),
+        [name]: fs.readFileSync(filePath, { encoding: "utf8" })
       });
     }, {});
 };
