@@ -13,13 +13,50 @@ const error = debug("postache:error");
 
 const dollarFollowedByAscii = /\$([a-zA-Z0-9_\.]+)/g;
 
+/* Remove the password from a given url string
+*/
+const obscurePassword = (conStr, password) => {
+  if (password === "") return conStr;
+  return conStr.replace(password, "\x1B[31m{password omitted}\x1B[39m");
+};
+
 const urlToObj = (conStr) => {
   if (typeof conStr !== "string") {
     return conStr;
   }
 
   const conParams = url.parse(conStr, true);
-  const auth = conParams.auth.split(':');
+
+  const hasAuth = conParams.auth !== null;
+
+  let auth = { 
+    username: '',
+    password: ''
+  };
+
+  if (hasAuth) {  
+    if (conParams.auth.indexOf(':') === -1){
+      auth.username = conParams.auth;
+      info('No password supplied, using only username');
+    } else {
+      auth.username = conParams.auth.split(':')[0];
+      auth.password = conParams.auth.split(':')[1];
+    }
+  } else {
+    info('No username or password supplied, using blank name and password');
+  }
+
+  if (conParams.pathname === null){
+    error(`
+You must define a valid database url!
+A database URL looks like: 
+  postgres://localhost/omni/
+But you gave me:
+  ${obscurePassword(conStr, auth.password)}
+    `.trim());
+    throw new Error("Invalid database URL!");
+  }
+
 
   return {
     user: auth[0],
