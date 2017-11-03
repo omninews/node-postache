@@ -49,7 +49,7 @@ const urlToObj = conStr => {
     error(
       `
 You must define a valid database url!
-A database URL looks like: 
+A database URL looks like:
   postgres://localhost/omni/
 But you gave me:
   ${obscurePassword(conStr, auth.password)}
@@ -59,8 +59,8 @@ But you gave me:
   }
 
   return {
-    user: auth[0],
-    password: auth[1],
+    user: auth.username,
+    password: auth.password,
     host: conParams.hostname,
     port: conParams.port,
     database: conParams.pathname.split("/")[1],
