@@ -1,6 +1,6 @@
 {
   "name": "postache",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Mustache for queries; objects for query params",
   "main": "index.js",
   "scripts": {
@@ -10,21 +10,21 @@
   "author": "Andreas Hultgren (Omni)",
   "license": "ISC",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=10.4.0"
   },
   "dependencies": {
     "debug": "^2.3.3",
-    "mustache": "^2.2.1",
-    "pg": "^6.1.0",
+    "mustache": "^2.3.2",
+    "pg": "^8.8.0",
     "ramda": "^0.22.1",
     "recursive-readdir-sync": "^1.0.6"
   },
   "devDependencies": {
-    "eslint": "^6.0.0",
-    "eslint-config-airbnb-base": "^11.1.0",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-prettier": "^2.1.2",
-    "mocha": "^6.1.4",
-    "prettier": "^1.5.2"
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-prettier": "^2.7.0",
+    "mocha": "^9.2.2",
+    "prettier": "^1.19.1"
   }
 }
