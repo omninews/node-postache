@@ -12,8 +12,7 @@ const error = debug("postache:error");
 
 const dollarFollowedByAscii = /\$([a-zA-Z0-9_.]+)/g;
 
-/* Remove the password from a given url string
-*/
+/* Remove the password from a given url string */
 const obscurePassword = (conStr, password) => {
   if (password === "") return conStr;
   return conStr.replace(password, "\x1B[31m{password omitted}\x1B[39m");

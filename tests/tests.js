@@ -1,6 +1,6 @@
 /* global describe, it */
 const assert = require("assert");
-const postache = require("../index.js");
+const postache = require("../index");
 
 describe("postache", () => {
   it("should crash if no database was given", () => {
