@@ -10,7 +10,8 @@
   "author": "Andreas Hultgren (Omni)",
   "license": "ISC",
   "engines": {
-    "node": ">=10.4.0"
+    "node": ">=10.4.0",
+    "npm": ">=6.1.0"
   },
   "dependencies": {
     "debug": "^2.3.3",
