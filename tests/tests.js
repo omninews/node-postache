@@ -25,6 +25,60 @@ describe("postache", () => {
     postache([], [], "postgres://username:password@some.url/omni");
     done();
   });
+
+  it("should override configs passed", done => {
+    const config = {
+      user: "user",
+      password: "password",
+      port: 1234
+    };
+
+    const result = postache(
+      [],
+      [],
+      "postgres://username:test@test:5432/test",
+      config
+    );
+
+    assert.equal(result.db.options.user, config.user);
+    assert.equal(result.db.options.password, config.password);
+    assert.equal(result.db.options.host, "test");
+    assert.equal(result.db.options.port, config.port);
+    assert.equal(result.db.options.database, "test");
+
+    done();
+  });
+
+  it("should accept an object as pg connection configuration", done => {
+    const config = {
+      user: "user",
+      password: "password",
+      port: 1234
+    };
+
+    const result = postache([], [], config);
+
+    assert.equal(result.db.options.user, config.user);
+    assert.equal(result.db.options.password, config.password);
+    assert.equal(result.db.options.port, config.port);
+
+    done();
+  });
+
+  it("should accept connection string url", done => {
+    const result = postache(
+      [],
+      [],
+      "postgres://username:password@some.url/omni"
+    );
+
+    assert.equal(result.db.options.user, "username");
+    assert.equal(result.db.options.password, "password");
+    assert.equal(result.db.options.host, "some.url");
+    assert.equal(result.db.options.database, "omni");
+
+    done();
+  });
 });
 
 describe("loadDir", () => {
