@@ -18,6 +18,7 @@ const obscurePassword = (conStr, password) => {
   return conStr.replace(password, "\x1B[31m{password omitted}\x1B[39m");
 };
 
+// Deprecated: Parse a connection string to a pg configuration object
 const urlToObj = conStr => {
   if (typeof conStr !== "string") {
     return conStr;
@@ -37,8 +38,9 @@ const urlToObj = conStr => {
       auth.username = conParams.auth;
       info("No password supplied, using only username");
     } else {
-      auth.username = conParams.auth.split(":")[0];
-      auth.password = conParams.auth.split(":")[1];
+      const [username, password] = conParams.auth.split(":");
+      auth.username = username;
+      auth.password = password;
     }
   } else {
     info("No username or password supplied, using blank name and password");
@@ -71,8 +73,30 @@ But you gave me:
   };
 };
 
-module.exports = (queries, context, databaseUrl) => {
-  const db = new pg.Pool(urlToObj(databaseUrl));
+// Parse a config object or a string to support old and new ways of configuring postache
+const parseConfig = urlOrPgConfig => {
+  if (typeof urlOrPgConfig === "string") {
+    info(
+      "String database URL is deprecated, use an object instead! More info: https://github.com/omninews/node-postache#configuration"
+    );
+
+    return urlToObj(urlOrPgConfig);
+  }
+
+  if (typeof urlOrPgConfig === "object") {
+    return urlOrPgConfig;
+  }
+
+  throw new Error("Invalid database URL!");
+};
+
+module.exports = (queries, context, urlOrPgConfig, pgConfig = {}) => {
+  const pgConfigObj = {
+    ...parseConfig(urlOrPgConfig),
+    ...parseConfig(pgConfig)
+  };
+
+  const db = new pg.Pool(pgConfigObj);
 
   db.on("error", err => {
     error("idle client error: %s %j", err.message, err.stack);
@@ -97,10 +121,11 @@ module.exports = (queries, context, databaseUrl) => {
     });
   };
 
-  return Object.assign(
-    { query: db.query.bind(db), db },
-    R.mapObjIndexed(queryWithObj, renderedQueries)
-  );
+  return {
+    query: db.query.bind(db),
+    db,
+    ...R.mapObjIndexed(queryWithObj, renderedQueries)
+  };
 };
 
 module.exports.loadDir = (dir, extOption) => {
