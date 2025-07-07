@@ -19,7 +19,7 @@ const obscurePassword = (conStr, password) => {
 };
 
 // Deprecated: Parse a connection string to a pg configuration object
-const urlToObj = conStr => {
+const urlToObj = (conStr) => {
   if (typeof conStr !== "string") {
     return conStr;
   }
@@ -30,7 +30,7 @@ const urlToObj = conStr => {
 
   const auth = {
     username: "",
-    password: ""
+    password: "",
   };
 
   if (hasAuth) {
@@ -69,12 +69,12 @@ But you gave me:
     min: conParams.query.min && +conParams.query.min,
     max: conParams.query.max && +conParams.query.max,
     idleTimeoutMillis:
-      conParams.query.idleTimeoutMillis && +conParams.query.idleTimeoutMillis
+      conParams.query.idleTimeoutMillis && +conParams.query.idleTimeoutMillis,
   };
 };
 
 // Parse a config object or a string to support old and new ways of configuring postache
-const parseConfig = urlOrPgConfig => {
+const parseConfig = (urlOrPgConfig) => {
   if (typeof urlOrPgConfig === "string") {
     info(
       "String database URL is deprecated, use an object instead! More info: https://github.com/omninews/node-postache#configuration"
@@ -93,21 +93,21 @@ const parseConfig = urlOrPgConfig => {
 export default (queries, context, urlOrPgConfig, pgConfig = {}) => {
   const pgConfigObj = {
     ...parseConfig(urlOrPgConfig),
-    ...parseConfig(pgConfig)
+    ...parseConfig(pgConfig),
   };
 
   const db = new pg.Pool(pgConfigObj);
 
-  db.on("error", err => {
+  db.on("error", (err) => {
     error("idle client error: %s %j", err.message, err.stack);
   });
 
   const renderedQueries = R.mapObjIndexed(
-    query => mustache.render(query, context, queries),
+    (query) => mustache.render(query, context, queries),
     queries
   );
 
-  const queryWithObj = objQuery => argsObj => {
+  const queryWithObj = (objQuery) => (argsObj) => {
     const args = [];
     const pgQuery = objQuery.replace(dollarFollowedByAscii, (_, name) => {
       args.push(R.path(name.split("."), argsObj));
@@ -115,7 +115,7 @@ export default (queries, context, urlOrPgConfig, pgConfig = {}) => {
     });
     info("Running query: %s", pgQuery);
     sensitive("Args: %j", args);
-    return db.query(pgQuery, args).catch(e => {
+    return db.query(pgQuery, args).catch((e) => {
       error("Postache error: %j", e);
       return Promise.reject(e);
     });
@@ -124,7 +124,7 @@ export default (queries, context, urlOrPgConfig, pgConfig = {}) => {
   return {
     query: db.query.bind(db),
     db,
-    ...R.mapObjIndexed(queryWithObj, renderedQueries)
+    ...R.mapObjIndexed(queryWithObj, renderedQueries),
   };
 };
 
@@ -136,11 +136,11 @@ export const loadDir = (dir, extOption) => {
   const isSqlFile = new RegExp(`.*\\${ext}$`);
 
   return readdir(dir)
-    .filter(file => file.match(isSqlFile))
+    .filter((file) => file.match(isSqlFile))
     .reduce((files, filePath) => {
       const name = filePath.replace(`${dir}/`, "").replace(ext, "");
       return Object.assign(files, {
-        [name]: fs.readFileSync(filePath, { encoding: "utf8" })
+        [name]: fs.readFileSync(filePath, { encoding: "utf8" }),
       });
     }, {});
 };

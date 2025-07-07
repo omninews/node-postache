@@ -1,4 +1,3 @@
-/* global describe, it */
 const assert = require("assert");
 const postache = require("../index.cjs");
 
@@ -11,26 +10,26 @@ describe("postache", () => {
     );
   });
 
-  it("should not crash if no auth was given", done => {
+  it("should not crash if no auth was given", (done) => {
     postache([], [], "postgres://some.url/omni");
     done();
   });
 
-  it("should not crash if only username was given", done => {
+  it("should not crash if only username was given", (done) => {
     postache([], [], "postgres://username@some.url/omni");
     done();
   });
 
-  it("should not crash if auth was given", done => {
+  it("should not crash if auth was given", (done) => {
     postache([], [], "postgres://username:password@some.url/omni");
     done();
   });
 
-  it("should override configs passed", done => {
+  it("should override configs passed", (done) => {
     const config = {
       user: "user",
       password: "password",
-      port: 1234
+      port: 1234,
     };
 
     const result = postache(
@@ -49,11 +48,11 @@ describe("postache", () => {
     done();
   });
 
-  it("should accept an object as pg connection configuration", done => {
+  it("should accept an object as pg connection configuration", (done) => {
     const config = {
       user: "user",
       password: "password",
-      port: 1234
+      port: 1234,
     };
 
     const result = postache([], [], config);
@@ -65,7 +64,7 @@ describe("postache", () => {
     done();
   });
 
-  it("should accept connection string url", done => {
+  it("should accept connection string url", (done) => {
     const result = postache(
       [],
       [],
@@ -82,27 +81,27 @@ describe("postache", () => {
 });
 
 describe("loadDir", () => {
-  it("should only load sql files by default", done => {
+  it("should only load sql files by default", (done) => {
     const fileMap = postache.loadDir("./tests/fixtures");
     assert.equal(Object.keys(fileMap).length, 1);
     assert.equal(fileMap["tests/fixtures/example"], "example");
     done();
   });
 
-  it("should load other files you tell it to", done => {
+  it("should load other files you tell it to", (done) => {
     const fileMap = postache.loadDir("./tests/fixtures", "json");
     assert.equal(Object.keys(fileMap).length, 1);
     assert.equal(fileMap["tests/fixtures/not_sql"], "not_sql");
     done();
   });
 
-  it("should only match against the extension", done => {
+  it("should only match against the extension", (done) => {
     const fileMap = postache.loadDir("./tests/fixtures", ".");
     assert.equal(Object.keys(fileMap).length, 0);
     done();
   });
 
-  it("should load wildcard files you tell it to", done => {
+  it("should load wildcard files you tell it to", (done) => {
     const fileMap = postache.loadDir("./tests/fixtures", "json|sql");
     assert.equal(Object.keys(fileMap).length, 2);
     assert.equal(fileMap["tests/fixtures/not_sql.json"], "not_sql");
