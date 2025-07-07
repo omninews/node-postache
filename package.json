@@ -2,7 +2,12 @@
   "name": "postache",
   "version": "2.0.0",
   "description": "Mustache for queries; objects for query params",
-  "main": "index.js",
+  "main": "index.cjs",
+  "type": "module",
+  "exports": {
+    "import": "./index.mjs",
+    "require": "./index.cjs"
+  },
   "scripts": {
     "test": "node_modules/.bin/eslint --fix . && node_modules/.bin/mocha tests"
   },
