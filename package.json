@@ -9,7 +9,7 @@
     "require": "./index.cjs"
   },
   "scripts": {
-    "test": "node_modules/.bin/eslint --fix . && node_modules/.bin/mocha tests"
+    "test": "eslint --fix '**/*.{js,cjs,mjs}' && node_modules/.bin/mocha tests"
   },
   "keywords": [],
   "author": "Andreas Hultgren (Omni)",
@@ -26,11 +26,10 @@
     "recursive-readdir-sync": "^1.0.6"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-prettier": "^2.7.0",
-    "mocha": "^9.2.2",
-    "prettier": "^1.19.1"
+    "eslint": "7.32.0",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-prettier": "3.4.1",
+    "mocha": "8.4.0",
+    "prettier": "2.8.8"
   }
 }

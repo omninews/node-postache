@@ -1,18 +1,33 @@
 module.exports = {
-    "extends": "airbnb-base",
-    "plugins": [
-        "import",
-        "prettier"
-    ],
-    "rules": {
-      "quotes": [1, "double"],
-      'arrow-parens': 0,
-      "no-nested-ternary": 0,
-      "no-confusing-arrow": 0,
-      "padded-blocks": 0,
-      "no-else-return": 0,
-      "brace-style": 0,
-      "comma-dangle": 0,
-      "prettier/prettier": "error"
-    }
+  env: {
+    es2021: true,
+    node: true,
+    mocha: true,
+  },
+  parserOptions: {
+    ecmaVersion: 2020, // or 2018 for Node 10 compatibility
+    sourceType: "module", // for .mjs files; .cjs will still be CommonJS
+  },
+  extends: ["eslint:recommended", "plugin:prettier/recommended"],
+  plugins: ["prettier"],
+  rules: {
+    quotes: [1, "double"],
+    "prettier/prettier": "error",
+  },
+  overrides: [
+    {
+      files: ["*.cjs"],
+      parserOptions: {
+        sourceType: "script",
+        ecmaVersion: 2020,
+      },
+    },
+    {
+      files: ["*.mjs"],
+      parserOptions: {
+        sourceType: "module",
+        ecmaVersion: 2020,
+      },
+    },
+  ],
 };
